@@ -25,7 +25,7 @@ helm install  metrics-server metrics-server/metrics-server -n monitoring
 In order to have the required Custom Resource Definitions (CRD), we will need 
 [Prometheus Stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) installed.
 
-Use the Prometheus stack template file [values_prometheus.hc.55.7.0.yml](./prometheus/values_prometheus.hc.55.7.0.yml) and create a copy.
+Use the Prometheus stack template file [values_prometheus.hc.55.7.0.yml](./kube-prometheus-stack/values_prometheus.hc.55.7.0.yml) and create a copy.
 Walk through the file and replace all values which are marked with a 'TODO'. This includes node selectors, storage classes and hostnames.
 
 ```
@@ -80,8 +80,8 @@ To enable Prometheus metrics for Zookeeper, the `templates/zookeeper.yml` file n
 #### Add pod monitors
 To add the pod monitors so that Prometheus starts scraping the metrics from Dremio and Zookeeper, run the following command:
 ```
-kubectl apply -n <dremio namespace> -f https://raw.githubusercontent.com/chufe-dremio/dremio-prometheus-monitoring/main/specs/dremio-pod-monitor.yml
-kubectl apply -n <dremio namespace> -f https://raw.githubusercontent.com/chufe-dremio/dremio-prometheus-monitoring/main/specs/zookeeper-pod-monitor.yml
+kubectl apply -n <dremio namespace> -f https://raw.githubusercontent.com/chufe-dremio/dremio-prometheus-monitoring/main/specs/dremio-pod-monitor.yaml
+kubectl apply -n <dremio namespace> -f https://raw.githubusercontent.com/chufe-dremio/dremio-prometheus-monitoring/main/specs/zookeeper-pod-monitor.yaml
 ```
 
 #### Install the Grafana Dashboard
