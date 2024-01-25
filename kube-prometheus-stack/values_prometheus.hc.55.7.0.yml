@@ -1,0 +1,189 @@
+# Helm command: helm upgrade --install prometheus prometheus-community/kube-prometheus-stack -n monitoring --version 55.7.0 -f values_prometheus.hc.55.7.0.yml
+global:
+  imageRegistry: ""
+
+crds:
+  enabled: true
+
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false
+    configReloaders: true
+    general: true
+    k8sContainerCpuUsageSecondsTotal: true
+    k8sContainerMemoryCache: true
+    k8sContainerMemoryRss: true
+    k8sContainerMemorySwap: true
+    k8sContainerResource: true
+    k8sContainerMemoryWorkingSetBytes: true
+    k8sPodOwner: true
+    kubeApiserverAvailability: true
+    kubeApiserverBurnrate: true
+    kubeApiserverHistogram: true
+    kubeApiserverSlos: true
+    kubeControllerManager: false
+    kubelet: true
+    kubeProxy: false
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeSchedulerAlerting: false
+    kubeSchedulerRecording: false
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+    windows: false
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    replicas: 1
+    ## Time duration Alertmanager shall retain data for. Default is '120h', and must match the regular expression
+    ## [0-9]+(ms|s|m|h) (milliseconds seconds minutes hours).
+    ##
+    retention: 120h
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: managed # TODO set the appropriate storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 32Gi
+    nodeSelector:
+      agentpool: appspool # TODO please set the node selector
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+
+grafana:
+  enabled: true
+  adminPassword: admin_123$please_change! # TODO set the initial password
+  forceDeployDashboards: true
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: utc
+  defaultDashboardsEditable: false
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  persistence:
+      # without this annotation, helm delete will also delete the PVC!
+      annotations:
+        "helm.sh/resource-policy": keep
+      enabled: true
+      storageClassName: managed # TODO set the appropriate storage class
+      accessModes: ["ReadWriteOnce"]
+      size: 32Gi
+  nodeSelector:
+    agentpool: appspool  # TODO please set the node selector
+  ingress:
+    enabled: true # TODO use your existing ingress or disable
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt # TODO keep cert manager, replace or remove.
+    hosts:
+    - yourdomain.com # TODO set your domain
+    path: /
+    tls:
+    - secretName: yourdomain.com # TODO set your domain
+      hosts:
+      - yourdomain.com # TODO set your domain
+
+
+prometheus:
+  enabled: true
+  thanosService:
+    enabled: false
+  thanosServiceMonitor:
+    enabled: false
+  thanosServiceExternal:
+    enabled: false
+  prometheusSpec:
+    nodeSelector:
+      agentpool: appspool # TODO please set the node selector
+    retention: 30d
+    retentionSize: "200GiB"
+    replicas: 1
+    scrapeInterval: "5s"
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: managed-premium # TODO set the appropriate storage class
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 256Gi
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1024Mi
+    # Otherwise the pod monitor does not work. By default it is true
+    podMonitorSelectorNilUsesHelmValues: false
+
+prometheusOperator:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  # Required for use in managed kubernetes clusters (such as AWS EKS) with custom CNI (such as calico),
+  # because control-plane managed by AWS cannot communicate with pods' IP CIDR and admission webhooks are not working
+  hostNetwork: false
+  nodeSelector:
+    agentpool: appspool # TODO please set the node selector
+
+kubeStateMetrics:
+  enabled: true
+
+kube-state-metrics:
+  nodeSelector:
+    agentpool: appspool # TODO please set the node selector
+
+kubernetesServiceMonitors:
+  enabled: true
+
+kubeApiServer:
+  enabled: true
+
+kubelet:
+  enabled: true
+
+kubeControllerManager:
+  enabled: false
+
+coreDns:
+  enabled: true
+
+kubeDns:
+  enabled: false
+
+kubeEtcd:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+kubeProxy:
+  enabled: false
+
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    linux:
+      enabled: true
+    darwin:
+      enabled: false
+
+thanosRuler:
+  enabled: false
