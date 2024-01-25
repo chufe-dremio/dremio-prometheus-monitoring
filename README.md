@@ -3,15 +3,13 @@
 ### Initial Prometheus Setup
 
 #### Create a Namespace for Prometheus
-Create a Namespace for monitoring 
-
-Example:
+Create a Namespace for monitoring:
 
 `kubectl create ns monitoring`
 
 #### Install Metrics Server
 In order to use the default scaling metrics of CPU and memory usage, [metrics server](https://github.com/kubernetes-sigs/metrics-server) will need to be installed
-This step it not required for Azure Kubernetes Service (AKS).
+This step is not required for Azure Kubernetes Service (AKS).
 
 ```
 # Add the kubernetes-sigs repo
