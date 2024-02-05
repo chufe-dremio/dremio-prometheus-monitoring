@@ -8,5 +8,5 @@ spec:
       role: dremio-cluster-pod
   podMetricsEndpoints:
     - path: /metrics
-      interval: {{ default 10 $.Values.executor.nodeLifecycleService.scalingMetrics.pollingIntervalSeconds }}s
+      interval: 10s
       port: prometheus
