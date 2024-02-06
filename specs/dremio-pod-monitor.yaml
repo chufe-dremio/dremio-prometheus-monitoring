@@ -8,5 +8,5 @@ spec:
       role: dremio-cluster-pod
   podMetricsEndpoints:
     - path: /metrics
-      interval: 10s
+      interval: 5s
       port: prometheus
